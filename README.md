@@ -2,7 +2,6 @@
 
 Run with
 
-
 ```bash
-go 
+go run main.go
 ```
