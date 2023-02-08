@@ -11,6 +11,7 @@ require (
 )
 
 require (
+	github.com/TBD54566975/ssi-sdk v0.0.2-alpha.0.20230206232705-91132696bf17 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.1 // indirect
@@ -23,7 +24,7 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/subosito/gotenv v1.4.2 // indirect
 	golang.org/x/sys v0.4.0 // indirect
-	golang.org/x/text v0.5.0 // indirect
+	golang.org/x/text v0.6.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

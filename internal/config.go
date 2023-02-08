@@ -8,7 +8,8 @@ import (
 )
 
 type Config struct {
-	Routes map[string]string `json:"routes"`
+	Routes map[string]string  `json:"routes"`
+	DIDs   map[string]KeyPair `json:"dids"`
 }
 
 func ToStringMapString(i map[string]interface{}) map[string]string {

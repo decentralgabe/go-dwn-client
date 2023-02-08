@@ -37,14 +37,14 @@ func init() {
 }
 
 func initConfig() {
+	// Find the home directory.
+	home, err := os.UserHomeDir()
+	cobra.CheckErr(err)
+
 	if cfgFile != "" {
 		// Use config file from the flag.
 		viper.SetConfigFile(cfgFile)
 	} else {
-		// Find the home directory.
-		home, err := os.UserHomeDir()
-		cobra.CheckErr(err)
-
 		// Search config in home directory with name "cli" (without extension).
 		viper.AddConfigPath(home)
 		viper.SetConfigType("json")
@@ -53,12 +53,19 @@ func initConfig() {
 
 	viper.AutomaticEnv()
 
-	if err := viper.ReadInConfig(); err == nil {
-		logrus.Debugf("Using config file: %s", viper.ConfigFileUsed())
+	if err = viper.ReadInConfig(); err == nil {
+		logrus.Infof("Using config file: %s", viper.ConfigFileUsed())
 		configRoutes := viper.Get("routes")
 		routeTable = internal.NewRouteTableFromConfig(configRoutes)
 		if logrus.GetLevel() > logrus.InfoLevel {
 			routeTable.PrintRoutes()
 		}
+	} else {
+		logrus.Warnf("Could not read config file: %s", err.Error())
+		configLocation := home + "/.rdr-cli.json"
+		if err = os.WriteFile(configLocation, []byte("{}"), 0644); err != nil {
+			logrus.Warnf("Could not create config file: %s", err.Error())
+		}
+		routeTable = internal.NewRouteTableFromConfig(nil)
 	}
 }

@@ -10,7 +10,7 @@ import (
 
 func init() {
 	rootCmd.AddCommand(routeCmd)
-	rootCmd.PersistentFlags().StringVar(&did, "did", "", "did to use for the command")
+	rootCmd.PersistentFlags().StringVar(&routeDID, "did", "", "did to use for the command")
 
 	routeCmd.AddCommand(routeViewCmd)
 	routeCmd.AddCommand(routeAddCmd)
@@ -18,7 +18,7 @@ func init() {
 }
 
 var (
-	did string
+	routeDID string
 
 	routeTable = new(internal.RouteTable)
 
@@ -37,7 +37,7 @@ var (
 			if len(args) > 0 {
 				return cmd.Help()
 			}
-			routeTable.PrintRoute(did)
+			routeTable.PrintRoute(routeDID)
 			return nil
 		},
 	}
@@ -49,10 +49,10 @@ var (
 			if len(args) < 1 {
 				return cmd.Help()
 			}
-			if did == "" {
+			if routeDID == "" {
 				return errors.New("did is a required flag")
 			}
-			return routeTable.AddRoute(did, args[0])
+			return routeTable.AddRoute(routeDID, args[0])
 		},
 	}
 
@@ -63,10 +63,10 @@ var (
 			if len(args) > 0 {
 				return cmd.Help()
 			}
-			if did == "" {
+			if routeDID == "" {
 				return errors.New("did is a required flag")
 			}
-			return routeTable.RemoveRoute(did)
+			return routeTable.RemoveRoute(routeDID)
 		},
 	}
 )

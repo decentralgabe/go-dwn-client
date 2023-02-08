@@ -6,9 +6,12 @@ import (
 
 func init() {
 	rootCmd.AddCommand(didCmd)
+	rootCmd.PersistentFlags().StringVar(&didDID, "did", "", "did to use for the command")
 }
 
 var (
+	didDID string
+
 	didCmd = &cobra.Command{
 		Use:   "did",
 		Short: "Interact with the dids",

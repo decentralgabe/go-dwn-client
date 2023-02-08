@@ -9,12 +9,6 @@ type RouteTable struct {
 	routes map[string]string
 }
 
-func NewRouteTable() *RouteTable {
-	return &RouteTable{
-		routes: make(map[string]string),
-	}
-}
-
 func NewRouteTableFromConfig(config interface{}) *RouteTable {
 	routes := make(map[string]string)
 	if config != nil {
