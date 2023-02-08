@@ -1,3 +1,0 @@
-routes:
-  did:example:test: "http://localhost:8080"
-  did:example:test2: "http://localhost:8081"

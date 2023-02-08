@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/decentralgabe/go-rdr-client/pkg"
+	"github.com/decentralgabe/go-rdr-client/internal"
 )
 
 var (
@@ -29,9 +29,11 @@ func Execute() error {
 }
 
 func init() {
+	// config
 	cobra.OnInitialize(initConfig)
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is config/cli.yaml)")
-	rootCmd.AddCommand(routeCmd)
+
+	// flags
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is ~/.rdr-cli.json)")
 }
 
 func initConfig() {
@@ -39,23 +41,24 @@ func initConfig() {
 		// Use config file from the flag.
 		viper.SetConfigFile(cfgFile)
 	} else {
-		// Find current directory.
-		current, err := os.Getwd()
+		// Find the home directory.
+		home, err := os.UserHomeDir()
 		cobra.CheckErr(err)
 
-		// Search config in current directory with name "cli" (without extension).
-		viper.AddConfigPath(current)
-		viper.AddConfigPath(current + "/config")
-		viper.SetConfigType("yaml")
-		viper.SetConfigName("cli")
+		// Search config in home directory with name "cli" (without extension).
+		viper.AddConfigPath(home)
+		viper.SetConfigType("json")
+		viper.SetConfigName(".rdr-cli")
 	}
 
 	viper.AutomaticEnv()
 
 	if err := viper.ReadInConfig(); err == nil {
-		logrus.Infof("Using config file: %s", viper.ConfigFileUsed())
-		routes := viper.Get("routes").(map[string]interface{})
-		routeTable = pkg.NewRouteTableFromConfig(routes)
-		// routeTable.PrintRoutes()
+		logrus.Debugf("Using config file: %s", viper.ConfigFileUsed())
+		configRoutes := viper.Get("routes")
+		routeTable = internal.NewRouteTableFromConfig(configRoutes)
+		if logrus.GetLevel() > logrus.InfoLevel {
+			routeTable.PrintRoutes()
+		}
 	}
 }

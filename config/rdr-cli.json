@@ -1,0 +1,6 @@
+{
+  "routes": {
+    "did:test:abcd": "http://test.com/abcd",
+    "did:test:efghi": "http://test.com/efghi"
+  }
+}
