@@ -20,17 +20,34 @@ func ToStringMapString(i map[string]interface{}) map[string]string {
 	return m
 }
 
-func ReadRouteTable() (*RouteTable, error) {
+func ReadConfig() (*Config, error) {
 	var c Config
 	if err := viper.Unmarshal(&c); err != nil {
 		return nil, err
 	}
-	return NewRouteTableFromConfig(c.Routes), nil
+	return &c, nil
 }
 
 func SaveRouteTable(rt *RouteTable) error {
-	updateConfig := Config{Routes: rt.routes}
-	configJSON, err := json.Marshal(updateConfig)
+	cfg, err := ReadConfig()
+	if err != nil {
+		return err
+	}
+	cfg.Routes = rt.routes
+	configJSON, err := json.Marshal(cfg)
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(viper.ConfigFileUsed(), configJSON, 0755)
+}
+
+func SaveDIDTable(dt *DIDTable) error {
+	cfg, err := ReadConfig()
+	if err != nil {
+		return err
+	}
+	cfg.DIDs = dt.dids
+	configJSON, err := json.Marshal(cfg)
 	if err != nil {
 		return err
 	}
