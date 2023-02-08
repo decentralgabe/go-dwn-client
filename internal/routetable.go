@@ -15,7 +15,6 @@ func NewRouteTableFromConfig(config interface{}) *RouteTable {
 		for route, target := range config.(map[string]interface{}) {
 			routes[route] = target.(string)
 		}
-		return &RouteTable{routes: routes}
 	}
 	return &RouteTable{routes: routes}
 }

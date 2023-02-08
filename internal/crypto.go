@@ -14,7 +14,7 @@ type KeyPair struct {
 }
 
 func GenerateDIDKeyPair(keyType ssicrypto.KeyType) (*KeyPair, error) {
-	privKey, didKey, err := did.GenerateDIDKey(ssicrypto.Ed25519)
+	privKey, didKey, err := did.GenerateDIDKey(keyType)
 	if err != nil {
 		return nil, err
 	}
@@ -22,10 +22,14 @@ func GenerateDIDKeyPair(keyType ssicrypto.KeyType) (*KeyPair, error) {
 	if err != nil {
 		return nil, err
 	}
+	privKeyBytes, err := ssicrypto.PrivKeyToBytes(privKey)
+	if err != nil {
+		return nil, err
+	}
 	return &KeyPair{
 		ID:               didKey.String(),
 		KeyType:          keyType,
 		PublicKeyBase58:  base58.Encode(pubKey),
-		PrivateKeyBase58: base58.Encode(privKey.([]byte)),
+		PrivateKeyBase58: base58.Encode(privKeyBytes),
 	}, nil
 }

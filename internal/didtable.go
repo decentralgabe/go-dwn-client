@@ -1,8 +1,11 @@
 package internal
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
+
+	"github.com/sirupsen/logrus"
 )
 
 type DIDTable struct {
@@ -12,10 +15,19 @@ type DIDTable struct {
 func NewDIDTableFromConfig(config interface{}) *DIDTable {
 	dids := make(map[string]KeyPair)
 	if config != nil {
-		for did, keyPair := range config.(map[string]interface{}) {
-			dids[did] = keyPair.(KeyPair)
+		for did, keyPairJSON := range config.(map[string]interface{}) {
+			keyPairBytes, err := json.Marshal(keyPairJSON)
+			if err != nil {
+				logrus.WithError(err).Error("failed to marshal keyPairJSON from config")
+				continue
+			}
+			var keyPair KeyPair
+			if err = json.Unmarshal(keyPairBytes, &keyPair); err != nil {
+				logrus.WithError(err).Error("failed to unmarshal keyPairJSON from config")
+				continue
+			}
+			dids[did] = keyPair
 		}
-		return &DIDTable{dids: dids}
 	}
 	return &DIDTable{dids: dids}
 }
@@ -62,7 +74,7 @@ func (dt *DIDTable) PrintDID(did string) {
 		return
 	}
 	if keyPair, ok := dt.dids[did]; ok {
-		fmt.Printf("did<%s>: %s:%s\n", did, keyPair.KeyType, keyPair.PublicKeyBase58)
+		fmt.Printf("did<%s>: \nKey Type: %s\nPublic Key: %s\nPrivate Key: %s\n", did, keyPair.KeyType, keyPair.PublicKeyBase58, keyPair.PrivateKeyBase58)
 		return
 	}
 	fmt.Printf("No keyPair found for did<%s>, try adding one with 'rdr did add <did> <keyType> <pubKeyBase58> <privKeyBase58>'\n", did)

@@ -11,8 +11,6 @@ import (
 
 func init() {
 	rootCmd.AddCommand(didCmd)
-	rootCmd.PersistentFlags().StringVar(&didDID, "did", "", "did to use for the command")
-
 	didCmd.AddCommand(didViewCmd)
 	didCmd.AddCommand(didGenerateCmd)
 	didCmd.AddCommand(didAddCmd)
@@ -20,8 +18,6 @@ func init() {
 }
 
 var (
-	didDID string
-
 	didTable = new(internal.DIDTable)
 
 	didCmd = &cobra.Command{
@@ -39,19 +35,23 @@ var (
 			if len(args) > 0 {
 				return cmd.Help()
 			}
-			didTable.PrintDID(didDID)
+			didTable.PrintDID(did)
 			return nil
 		},
 	}
 
 	didGenerateCmd = &cobra.Command{
 		Use:   "generate",
-		Short: "Generate a new did",
+		Short: "Generate a new did taking an optional keyType argument",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if len(args) > 0 {
+			if len(args) > 1 {
 				return cmd.Help()
 			}
-			keyPair, err := internal.GenerateDIDKeyPair(ssicrypto.Ed25519)
+			keyType := ssicrypto.Ed25519
+			if args[0] != "" {
+				keyType = ssicrypto.KeyType(args[0])
+			}
+			keyPair, err := internal.GenerateDIDKeyPair(keyType)
 			if err != nil {
 				return err
 			}
@@ -69,11 +69,11 @@ var (
 			if len(args) < 3 {
 				return cmd.Help()
 			}
-			if didDID == "" {
+			if did == "" {
 				return errors.New("did is a required flag")
 			}
 			keyPair := internal.KeyPair{
-				ID:              didDID,
+				ID:              did,
 				KeyType:         ssicrypto.KeyType(args[0]),
 				PublicKeyBase58: args[1],
 			}
@@ -91,10 +91,10 @@ var (
 			if len(args) > 0 {
 				return cmd.Help()
 			}
-			if didDID == "" {
+			if did == "" {
 				return errors.New("did is a required flag")
 			}
-			return didTable.RemoveDID(didDID)
+			return didTable.RemoveDID(did)
 		},
 	}
 )

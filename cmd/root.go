@@ -55,10 +55,13 @@ func initConfig() {
 
 	if err = viper.ReadInConfig(); err == nil {
 		logrus.Infof("Using config file: %s", viper.ConfigFileUsed())
-		configRoutes := viper.Get("routes")
-		routeTable = internal.NewRouteTableFromConfig(configRoutes)
+		routeTable = internal.NewRouteTableFromConfig(viper.Get("routes"))
 		if logrus.GetLevel() > logrus.InfoLevel {
 			routeTable.PrintRoutes()
+		}
+		didTable = internal.NewDIDTableFromConfig(viper.Get("dids"))
+		if logrus.GetLevel() > logrus.InfoLevel {
+			didTable.PrintDIDs()
 		}
 	} else {
 		logrus.Warnf("Could not read config file: %s", err.Error())
@@ -67,5 +70,6 @@ func initConfig() {
 			logrus.Warnf("Could not create config file: %s", err.Error())
 		}
 		routeTable = internal.NewRouteTableFromConfig(nil)
+		didTable = internal.NewDIDTableFromConfig(nil)
 	}
 }
